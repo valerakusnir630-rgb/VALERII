@@ -1,0 +1,6 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+function luminance(hex){const rgb=hex.replace('#','').match(/../g).map(v=>parseInt(v,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];}
+function ratio(a,b){const v=[luminance(a),luminance(b)].sort((a,b)=>b-a);return (v[0]+.05)/(v[1]+.05);}
+test('text and primary controls satisfy 4.5:1 contrast on their designated solid backgrounds',async()=>{const css=await readFile(new URL('../src/styles.css',import.meta.url),'utf8');const colors=Object.fromEntries([...css.matchAll(/--(bg|panel|mint|text|muted|gold|lilac|line):(#[0-9a-f]{6})/g)].map(m=>[m[1],m[2]]));const results=[];for(const bg of [colors.bg,colors.panel,'#263b43','#233741','#192d36'])for(const fg of [colors.text,colors.muted,colors.mint,colors.gold,colors.lilac]){const contrast=ratio(fg,bg);assert.ok(contrast>=4.5,`${fg} on ${bg}: ${contrast.toFixed(2)}`);results.push(contrast);}assert.ok(ratio('#142b23',colors.mint)>=4.5);console.log('Minimum audited text contrast: '+Math.min(...results).toFixed(2)+':1. This checks the defined palette, not every rendered pixel.');});

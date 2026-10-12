@@ -1,0 +1,14 @@
+{
+  "name": "skillstrata",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Bilingual evidence-led discovery; Alexa+-style guided simulation",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node scripts/check.mjs",
+    "build": "node scripts/build.mjs"
+  }
+}
