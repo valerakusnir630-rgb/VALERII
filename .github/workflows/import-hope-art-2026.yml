@@ -1,0 +1,26 @@
+name: Publish original Existential Hope artwork
+on:
+  push:
+    paths:
+      - '.github/workflows/import-hope-art-2026.yml'
+permissions:
+  contents: write
+jobs:
+  import-art:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download submitted original artwork
+        env:
+          ART_SOURCE: "https://sdmntprnortheu.oaiusercontent.com/files/00000000-8218-81f4-b2c6-1d63b0f988b7/raw?se=2026-10-28T17%3A04%3A50Z&sp=r&sv=2026-02-06&sr=b&scid=0fc9f24f-5933-5eff-a2f1-7a1dc6ae4b3f&skoid=002823aa-689d-47ca-9347-108c20f4f00d&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-10-28T10%3A25%3A37Z&ske=2026-10-29T10%3A25%3A37Z&sks=b&skv=2026-02-06&sig=NJa/OLA5bqgNi9rv1q%2BnLZH/5j1v4i/qqTMQqx6hxAU%3D"
+        run: |
+          mkdir -p AI-Art-Portfolio
+          curl -fL --retry 3 --max-time 90 "$ART_SOURCE" -o AI-Art-Portfolio/We_Got_Our_Tuesdays_Back.png
+          file AI-Art-Portfolio/We_Got_Our_Tuesdays_Back.png
+          test "$(stat -c%s AI-Art-Portfolio/We_Got_Our_Tuesdays_Back.png)" -gt 100000
+      - name: Commit public artwork
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add AI-Art-Portfolio/We_Got_Our_Tuesdays_Back.png
+          git diff --cached --quiet || (git commit -m 'Publish We Got Our Tuesdays Back for Existential Hope 2026' && git push)
